@@ -15,7 +15,7 @@ on:
   #   paths:
   #     - "bicep/main-two-nics.bicep"
   #     - "bicep/main-two-nics.parameters.json"
-  #     - ".github/workflows/deploymentCheker-two-nics.yml"
+  #     - ".github/workflows/deploymentChecker-two-nics.yml"
 
   #Run when PR's are made to main, where the changes are in the bicep directory or this workflow file itself
   pull_request:
@@ -24,7 +24,7 @@ on:
     paths:
       #- "bicep/main-active-active.parameters.json"
       - "bicep/*"
-      - ".github/workflows/deploymentCheker-two-nics.yml"
+      - ".github/workflows/deploymentChecker-two-nics.yml"
 
   #Run on a weekly schedule
   #schedule:
@@ -96,7 +96,8 @@ jobs:
             az network vnet subnet create -g '${{ env.RG }}' --vnet-name '${{ env.VNET }}' -n '${{ env.UntrustedSubnet }}' --address-prefixes '${{ env.UntrustedSubnetAddress }}'
             az network vnet subnet create -g '${{ env.RG }}' --vnet-name '${{ env.VNET }}' -n '${{ env.TrustedSubnet }}' --address-prefixes '${{ env.TrustedSubnetAddress }}'
 
-            OpnScriptURI=$(echo ${{ env.OpnScriptURI }} | sed -e "s_master_${GITHUB_HEAD_REF}_")
+            #OpnScriptURI=$(echo ${{ env.OpnScriptURI }} | sed -e "s_master_${GITHUB_HEAD_REF}_")
+            [[ ! -z "${GITHUB_HEAD_REF}" ]] && OpnScriptURI=$(echo ${{ env.OpnScriptURI }} | sed -e "s_master_${GITHUB_HEAD_REF}_")
             az deployment group validate -g '${{ env.RG }}' -n '${{ env.DEPNAME }}' -f ${{ env.TemplateFilePath }} -p ${{ env.ParamFilePath }} -p scenarioOption=${{ env.scenarioOption }} -p existingvirtualNetwork=${{ env.existingvirtualNetwork }} -p existingUntrustedSubnetName=${{ env.UntrustedSubnet }} -p existingTrustedSubnetName=${{ env.TrustedSubnet }} -p DeployWindows=${{ env.DeployWindows }} -p OpnScriptURI=$OpnScriptURI
 
   Deploy:
@@ -119,7 +120,7 @@ jobs:
         with:
           azcliversion: ${{ env.AZCLIVERSION }}
           inlineScript: |
-            OpnScriptURI=$(echo ${{ env.OpnScriptURI }} | sed -e "s_master_${GITHUB_HEAD_REF}_")
+            [[ ! -z "${GITHUB_HEAD_REF}" ]] && OpnScriptURI=$(echo ${{ env.OpnScriptURI }} | sed -e "s_master_${GITHUB_HEAD_REF}_")
             echo Executing: az deployment group create -g ${{ env.RG }} -n ${{ env.DEPNAME }} -f ${{ env.TemplateFilePath }} -p ${{ env.ParamFilePath }} -p scenarioOption=${{ env.scenarioOption }} -p existingvirtualNetwork=${{ env.existingvirtualNetwork }} -p existingUntrustedSubnetName=${{ env.UntrustedSubnet }} -p existingTrustedSubnetName=${{ env.TrustedSubnet }} -p DeployWindows=${{ env.DeployWindows }} -p OpnScriptURI=$OpnScriptURI --verbose
             az deployment group create -g ${{ env.RG }} -n ${{ env.DEPNAME }} -f ${{ env.TemplateFilePath }} -p ${{ env.ParamFilePath }} -p scenarioOption=${{ env.scenarioOption }} -p existingvirtualNetwork=${{ env.existingvirtualNetwork }} -p existingUntrustedSubnetName=${{ env.UntrustedSubnet }} -p existingTrustedSubnetName=${{ env.TrustedSubnet }} -p DeployWindows=${{ env.DeployWindows }} -p OpnScriptURI=$OpnScriptURI --verbose
 
