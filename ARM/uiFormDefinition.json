@@ -158,11 +158,11 @@
               "name": "vnetActiveActiveWindows",
               "type": "Microsoft.Network.VirtualNetworkCombo",
               "label": {
-                "virtualNetwork": "Select an Existing VNet.",
+                "virtualNetwork": "Select an Existing VNet (-)in the same RG).",
                 "subnets": "Select an existing subnet"
               },
               "toolTip": {
-                "virtualNetwork": "Create a new VNet or select an existing one.",
+                "virtualNetwork": "Create a new VNet or select an existing one (in the same RG).",
                 "subnets": "Select subnet"
               },
               "defaultValue": {
@@ -213,7 +213,7 @@
               "name": "vnetActiveActivenoWindows",
               "type": "Microsoft.Network.VirtualNetworkCombo",
               "label": {
-                "virtualNetwork": "Select an Existing VNet.",
+                "virtualNetwork": "Select an Existing VNet (in the same RG).",
                 "subnets": "Select an existing subnet"
               },
               "toolTip": {
@@ -258,7 +258,7 @@
               "name": "vnetTwoNicsWindows",
               "type": "Microsoft.Network.VirtualNetworkCombo",
               "label": {
-                "virtualNetwork": "Select an Existing VNet.",
+                "virtualNetwork": "Select an Existing VNet (in the same RG).",
                 "subnets": "Select an existing subnet"
               },
               "toolTip": {
@@ -313,7 +313,7 @@
               "name": "vnetTwoNicsnoWindows",
               "type": "Microsoft.Network.VirtualNetworkCombo",
               "label": {
-                "virtualNetwork": "Select an Existing VNet.",
+                "virtualNetwork": "Select an Existing VNet (in the same RG).",
                 "subnets": "Select an existing subnet"
               },
               "toolTip": {
@@ -358,7 +358,7 @@
               "name": "vnetSingleNicWindows",
               "type": "Microsoft.Network.VirtualNetworkCombo",
               "label": {
-                "virtualNetwork": "Select an Existing VNet.",
+                "virtualNetwork": "Select an Existing VNet (in the same RG).",
                 "subnets": "Select an existing subnet"
               },
               "toolTip": {
@@ -403,7 +403,7 @@
               "name": "vnetSingleNicnoWindows",
               "type": "Microsoft.Network.VirtualNetworkCombo",
               "label": {
-                "virtualNetwork": "Select an Existing VNet.",
+                "virtualNetwork": "Select an Existing VNet (in the same RG).",
                 "subnets": "Select an existing subnet"
               },
               "toolTip": {
