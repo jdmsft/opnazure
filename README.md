@@ -1,55 +1,6 @@
-# OPNsense Firewall on FreeBSD VM
+# OPNsense NVA on Azure FreeBSD VM
 
-CI Name | Actions Workflow | CI Status |
-|--------|--------|--------|
-| BicepBuild | [bicepBuild.yml](./.github/workflows/bicepBuild.yml) | [![bicepBuildCI](https://github.com/dmauser/opnazure/actions/workflows/bicepBuild.yml/badge.svg)](https://github.com/dmauser/opnazure/actions/workflows/bicepBuild.yml) |
-| Deployment Checker - Active Active | [deploymentChecker-active-active.yml](./.github/workflows/deploymentChecker-active-active.yml) | [![deploymentCheckeractiveactiveactiveCI](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-active-active.yml/badge.svg?branch=master)](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-active-active.yml) |
-| Deployment Checker - two nics | [deploymentChecker-two-nics.yml](./.github/workflows/deploymentChecker-two-nics.yml) | [![deploymentCheckertwonicsCI](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-two-nics.yml/badge.svg?branch=master)](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-two-nics.yml) |
-| Deployment Checker - single nic | [deploymentChecker-sing-nic.yml](./.github/workflows/deploymentChecker-sing-nic.yml) | [![deploymentCheckersingnicCI](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-sing-nic.yml/badge.svg?branch=master)](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-sing-nic.yml) |
-| Deployment Checker - new vnet Active Active | [deploymentChecker-newvnet-active-active.yml](./.github/workflows/deploymentChecker-newvnet-active-active.yml) | [![deploymentCheckeractivenewvnetactiveactiveCI](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-active-active.yml/badge.svg?branch=master)](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-active-active.yml) |
-| Deployment Checker - new vnet two nics | [deploymentChecker-newvnet-two-nics.yml](./.github/workflows/deploymentChecker-two-nics.yml) | [![deploymentCheckernewvnettwonicsCI](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-newvnet-two-nics.yml/badge.svg?branch=master)](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-newvnet-two-nics.yml) |
-| Deployment Checker - new vnet single nic | [deploymentChecker-newvnet-sing-nic.yml](./.github/workflows/deploymentChecker-sing-nic.yml) | [![deploymentCheckernewvnetsingnicCI](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-newvnet-sing-nic.yml/badge.svg?branch=master)](https://github.com/dmauser/opnazure/actions/workflows/deploymentChecker-newvnet-sing-nic.yml) |
-
-**Deployment Wizard**
-
-[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdmauser%2Fopnazure%2Fmaster%2FARM%2Fmain.json%3F/uiFormDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fdmauser%2Fopnazure%2Fmaster%2Fbicep%2FuiFormDefinition.json)
-
-The template allows you to deploy an OPNsense Firewall VM using the opnsense-bootsrtap installation method. It creates an FreeBSD VM, does a silent install of OPNsense using a modified version of opnsense-bootstrap.sh with the settings provided.
-
-The login credentials are set during the installation process to:
-
-- Username: root
-- Password: opnsense (lowercase)
-
-*** **Please** *** Change *default password!!!* (In case of using Active-Active scenario the password must be changed in both Firewalls and under Highavailability settings)
-
-After deployment, you can go to <https://PublicIP>, then input the user and password, to configure the OPNsense firewall.
-In case of Active-Active the URL should be <https://PublicIP:50443> for Primary server and <https://PublicIP:50444> for Secondary server.
-
-## Updates
-
-## October-2022
-- Updated FreeBSD to 13.1
-- Updated OPNSense to 22.7
-- Updated Azure Linux Agent to 2.8.0
-- Updated Python symbolic link to 3.9
-
-## April-2022
-- Updated FreeBSD 13 and OPNSense 22.1
-- Added support for Floating IPs in External Load Balance Rules to allow Port Forwarding without causing assymetric issues.
-- Enabled session Sync between Firewalls.
-- Add Virtual IP of the External Load Balancer to support Floating Rules.
-- Add support for a Windows Management VM in a management network.
-- Create a new simplified deployment wizard.
-- Bicep template refactory to support the new UI deployment wizard.
-
-### Nov-2021
-- Added Active-Active deployment option (using Azure Internal and External Loadbalancer and OPNsense HA settings).
-- Templates are now auto-generated under the folder ARM from a Bicep template using Github Actions.
-
-## Overview
-
-This OPNsense solution is installed in FreeBSD 12.0 (Azure Image).
+This OPNsense solution is installed in FreeBSD (Azure Image).
 Here is what you will see when you deploy this Template:
 
 There are 3 different deployment scenarios:
@@ -81,13 +32,28 @@ There are 3 different deployment scenarios:
     4) It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS.
     5) Option to deploy Windows management VM. (This option requires a management subnet to be created)
 
-## Design
-
 Design of two Nic deployment | Design of Active-Active deployment |
 |--------|--------|
 |![opnsense design](./images/two-nics.png)|![opnsense design](./images/active-active.png)|
 
 ## Deployment
+
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjdmsft%2Fopnazure%2Fmaster%2FARM%2Fmain.json%3F/uiFormDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fjdmsft%2Fopnazure%2Fmaster%2FARM%2FuiFormDefinition.json)
+
+The template allows you to deploy an OPNsense Firewall VM using the opnsense-bootsrtap installation method. It creates an FreeBSD VM, does a silent install of OPNsense using a modified version of opnsense-bootstrap.sh with the settings provided.
+
+The login credentials are set during the installation process to:
+
+- Username: root
+- Password: opnsense (lowercase)
+
+*** **Please** *** Change *default password!!!* (In case of using Active-Active scenario the password must be changed in both Firewalls and under Highavailability settings)
+
+After deployment, you can go to <https://PublicIP>, then input the user and password, to configure the OPNsense firewall.
+In case of Active-Active the URL should be <https://PublicIP:50443> for Primary server and <https://PublicIP:50444> for Secondary server.
+
+
+### Considerations
 
 Here are few considerations to deploy this solution correctly:
 
@@ -97,7 +63,7 @@ Here are few considerations to deploy this solution correctly:
 
 **Note**: It takes about 10 min to complete the whole process when VM is created and a new VM CustomScript is started to install OPNsense.
 
-## Usage
+### Post-deployment
 
 - First access can be done using <HTTPS://PublicIP.> Please ignore SSL/TLS errors and proceed. In case of Active-Active the URL should be <https://PublicIP:50443> for Primary server and <https://PublicIP:50444> for Secondary server.
 - Your first login is going to be username "root" and password "opnsense" (**PLEASE change your password right the way**).
@@ -109,10 +75,27 @@ Here are few considerations to deploy this solution correctly:
 
 Build custom deployment form
 
-## Feedbacks
+## Updates
 
-Please use Github [issues tab](https://github.com/dmauser/opnazure/issues) to provide feedback.
+## October-2022
+- Updated FreeBSD to 13.1
+- Updated OPNSense to 22.7
+- Updated Azure Linux Agent to 2.8.0
+- Updated Python symbolic link to 3.9
+
+## April-2022
+- Updated FreeBSD 13 and OPNSense 22.1
+- Added support for Floating IPs in External Load Balance Rules to allow Port Forwarding without causing assymetric issues.
+- Enabled session Sync between Firewalls.
+- Add Virtual IP of the External Load Balancer to support Floating Rules.
+- Add support for a Windows Management VM in a management network.
+- Create a new simplified deployment wizard.
+- Bicep template refactory to support the new UI deployment wizard.
+
+### Nov-2021
+- Added Active-Active deployment option (using Azure Internal and External Loadbalancer and OPNsense HA settings).
+- Templates are now auto-generated under the folder ARM from a Bicep template using Github Actions.
 
 ## Credits
 
-Thanks for direct feedbacks and contributions from: Adam Torkar, Brian Wurzbacher, [Victor Santana](https://github.com/welasco) and Brady Sondreal.
+This project is a fork of <https://github.com/dmauser/opnazure>

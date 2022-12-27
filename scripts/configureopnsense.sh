@@ -30,15 +30,15 @@ elif [ "$2" = "Secondary" ]; then
     sed -i "" "s/<hostname>OPNsense<\/hostname>/<hostname>OPNsense-Secondary<\/hostname>/" config-active-active-secondary.xml
     cp config-active-active-secondary.xml /usr/local/etc/config.xml
 elif [ "$2" = "SingNic" ]; then
-    fetch $1config-snic.xml
-    cp config-snic.xml /usr/local/etc/config.xml
+    fetch $1config-singlenic.xml
+    cp config-singlenic.xml /usr/local/etc/config.xml
 elif [ "$2" = "TwoNics" ]; then
-    fetch $1config.xml
+    fetch $1config-twonics.xml
     fetch $1get_nic_gw.py
     gwip=$(python get_nic_gw.py $3)
     sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config.xml
     sed -i "" "s_zzz.zzz.zzz.zzz_$4_" config.xml
-    cp config.xml /usr/local/etc/config.xml
+    cp config-twonics.xml /usr/local/etc/config.xml
 fi
 
 #OPNSense default configuration template
@@ -55,7 +55,8 @@ env ASSUME_ALWAYS_YES=YES pkg install ca_root_nss && pkg install -y bash
 #Download OPNSense Bootstrap and Permit Root Remote Login
 # fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
 #fetch https://raw.githubusercontent.com/opnsense/update/7ba940e0d57ece480540c4fd79e9d99a87f222c8/src/bootstrap/opnsense-bootstrap.sh.in
-fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
+#fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
+fetch $1bootstrap/opnsense-bootstrap.sh.in
 sed -i "" 's/#PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 #OPNSense

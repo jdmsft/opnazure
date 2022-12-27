@@ -37,12 +37,6 @@
     "PublicIPAddressSku": {
       "value": "Standard"
     },
-    "OpnScriptURI": {
-      "value": "https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/"
-    },
-    "ShellScriptName": {
-      "value": "configureopnsense.sh"
-    },
     "DeployWindows" :{
       "value": false
     },

@@ -96,58 +96,44 @@
         "description": "Specify Public IP SKU either Basic (lowest cost) or Standard (Required for HA LB)\""
       }
     },
-    "OpnScriptURI": {
-      "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/dmauser/opnazure/master/scripts/",
-      "metadata": {
-        "description": "URI for Custom OPN Script and Config"
-      }
-    },
-    "ShellScriptName": {
-      "type": "string",
-      "defaultValue": "configureopnsense.sh",
-      "metadata": {
-        "description": "Shell Script to be executed"
-      }
-    },
-    "DeployWindows": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Deploy Windows VM Trusted Subnet"
-      }
-    },
-    "WinUsername": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Only required in case of Deploying Windows VM. Windows Admin username (Used to login in Windows VM)."
-      }
-    },
-    "WinPassword": {
-      "type": "secureString",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Only required in case of Deploying Windows VM. Windows Password (Used to login in Windows VM)."
-      }
-    },
-    "existingWindowsSubnet": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Existing Windows Subnet Name. Only requried in case of deploying Windows in a exising subnet."
-      }
-    },
-    "DeployWindowsSubnet": {
-      "type": "string",
-      "defaultValue": "10.0.2.0/24",
-      "metadata": {
-        "description": "In case of deploying Windows in a New VNet this will be the Windows VM Subnet Address Space"
-      }
-    },
     "Location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]"
+    },
+    "DeployWindows": {
+        "type": "bool",
+        "defaultValue": false,
+        "metadata": {
+            "description": "Deploy Windows VM Trusted Subnet"
+        }
+    },
+    "WinUsername": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Only required in case of Deploying Windows VM. Windows Admin username (Used to login in Windows VM)."
+        }
+    },
+    "WinPassword": {
+        "type": "secureString",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Only required in case of Deploying Windows VM. Windows Password (Used to login in Windows VM)."
+        }
+    },
+    "existingWindowsSubnet": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+            "description": "Existing Windows Subnet Name. Only requried in case of deploying Windows in a exising subnet."
+        }
+    },
+    "DeployWindowsSubnet": {
+        "type": "string",
+        "defaultValue": "10.0.2.0/24",
+        "metadata": {
+            "description": "In case of deploying Windows in a New VNet this will be the Windows VM Subnet Address Space"
+        }
     }
   },
   "variables": {
@@ -157,7 +143,7 @@
     "trustedSubnetName": "Trusted-Subnet",
     "VMOPNsensePrimaryName": "[format('{0}-Primary', parameters('virtualMachineName'))]",
     "VMOPNsenseSecondaryName": "[format('{0}-Secondary', parameters('virtualMachineName'))]",
-    "publicIPAddressName": "[format('{0}-PublicIP', parameters('virtualMachineName'))]",
+    "publicIPAddressName": "[format('{0}-PIP', parameters('virtualMachineName'))]",
     "networkSecurityGroupName": "[format('{0}-NSG', parameters('virtualMachineName'))]",
     "externalLoadBalanceName": "External-LoadBalance",
     "externalLoadBalanceFIPConfName": "FW",
@@ -177,7 +163,9 @@
     "winvmroutetablename": "winvmroutetable",
     "winvmName": "VM-Win11Client",
     "winvmnetworkSecurityGroupName": "[format('{0}-NSG', variables('winvmName'))]",
-    "winvmpublicipName": "[format('{0}-PublicIP', variables('winvmName'))]"
+    "winvmpublicipName": "[format('{0}-PIP', variables('winvmName'))]",
+    "OpnScriptURI": "https://raw.githubusercontent.com/jdmsft/opnazure/master/scripts/",
+    "ShellScriptName": "configureopnsense.sh"
   },
   "resources": [
     {
@@ -814,19 +802,18 @@
           },
           "ShellScriptObj": {
             "value": {
-              "OpnScriptURI": "[parameters('OpnScriptURI')]",
+              "OpnScriptURI": "[variables('OpnScriptURI')]",
               "OpnType": "Secondary",
               "TrustedSubnetName": "[if(not(equals(parameters('scenarioOption'), 'SingleNic')), format('{0}/{1}', parameters('virtualNetworkName'), if(variables('useexistingvirtualNetwork'), parameters('existingTrustedSubnetName'), variables('trustedSubnetName'))), '')]",
-              "WindowsSubnetName": "[if(parameters('DeployWindows'), format('{0}/{1}', parameters('virtualNetworkName'), if(variables('useexistingvirtualNetwork'), parameters('existingWindowsSubnet'), variables('windowsvmsubnetname'))), '')]",
               "publicIPAddress": "[reference(resourceId('Microsoft.Resources/deployments', variables('publicIPAddressName'))).outputs.publicipAddress.value]",
               "opnSenseSecondarytrustedNicIP": ""
             }
           },
           "OPNScriptURI": {
-            "value": "[parameters('OpnScriptURI')]"
+            "value": "[variables('OpnScriptURI')]"
           },
           "ShellScriptName": {
-            "value": "[parameters('ShellScriptName')]"
+            "value": "[variables('ShellScriptName')]"
           },
           "TempPassword": {
             "value": "[variables('TempPassword')]"
@@ -866,11 +853,6 @@
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "1.0.0.0",
           "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.10.61.36676",
-              "templateHash": "2700207557126099888"
-            }
           },
           "parameters": {
             "untrustedSubnetId": {
@@ -951,6 +933,7 @@
                 },
                 "storageProfile": {
                   "osDisk": {
+                    "name": "[concat(parameters('virtualMachineName'),'-OSDisk')]",
                     "createOption": "FromImage"
                   },
                   "imageReference": {
@@ -1283,7 +1266,7 @@
           },
           "ShellScriptObj": {
             "value": {
-              "OpnScriptURI": "[parameters('OpnScriptURI')]",
+              "OpnScriptURI": "[variables('OpnScriptURI')]",
               "OpnType": "Primary",
               "TrustedSubnetName": "[if(not(equals(parameters('scenarioOption'), 'SingleNic')), format('{0}/{1}', parameters('virtualNetworkName'), if(variables('useexistingvirtualNetwork'), parameters('existingTrustedSubnetName'), variables('trustedSubnetName'))), '')]",
               "WindowsSubnetName": "[if(parameters('DeployWindows'), format('{0}/{1}', parameters('virtualNetworkName'), if(variables('useexistingvirtualNetwork'), parameters('existingWindowsSubnet'), variables('windowsvmsubnetname'))), '')]",
@@ -1292,10 +1275,10 @@
             }
           },
           "OPNScriptURI": {
-            "value": "[parameters('OpnScriptURI')]"
+            "value": "[variables('OpnScriptURI')]"
           },
           "ShellScriptName": {
-            "value": "[parameters('ShellScriptName')]"
+            "value": "[variables('ShellScriptName')]"
           },
           "TempPassword": {
             "value": "[variables('TempPassword')]"
@@ -1420,6 +1403,7 @@
                 },
                 "storageProfile": {
                   "osDisk": {
+                    "name": "[concat(parameters('virtualMachineName'),'-OSDisk')]",
                     "createOption": "FromImage"
                   },
                   "imageReference": {
@@ -1753,7 +1737,7 @@
           },
           "ShellScriptObj": {
             "value": {
-              "OpnScriptURI": "[parameters('OpnScriptURI')]",
+              "OpnScriptURI": "[variables('OpnScriptURI')]",
               "OpnType": "TwoNics",
               "TrustedSubnetName": "[if(not(equals(parameters('scenarioOption'), 'SingleNic')), format('{0}/{1}', parameters('virtualNetworkName'), if(variables('useexistingvirtualNetwork'), parameters('existingTrustedSubnetName'), variables('trustedSubnetName'))), '')]",
               "WindowsSubnetName": "[if(parameters('DeployWindows'), format('{0}/{1}', parameters('virtualNetworkName'), if(variables('useexistingvirtualNetwork'), parameters('existingWindowsSubnet'), variables('windowsvmsubnetname'))), '')]",
@@ -1762,10 +1746,10 @@
             }
           },
           "OPNScriptURI": {
-            "value": "[parameters('OpnScriptURI')]"
+            "value": "[variables('OpnScriptURI')]"
           },
           "ShellScriptName": {
-            "value": "[parameters('ShellScriptName')]"
+            "value": "[variables('ShellScriptName')]"
           },
           "TempPassword": {
             "value": "[variables('TempPassword')]"
@@ -1884,6 +1868,7 @@
                 },
                 "storageProfile": {
                   "osDisk": {
+                    "name": "[concat(parameters('virtualMachineName'),'-OSDisk')]",
                     "createOption": "FromImage"
                   },
                   "imageReference": {
@@ -2214,7 +2199,7 @@
           },
           "ShellScriptObj": {
             "value": {
-              "OpnScriptURI": "[parameters('OpnScriptURI')]",
+              "OpnScriptURI": "[variables('OpnScriptURI')]",
               "OpnType": "SingleNic",
               "TrustedSubnetName": "",
               "WindowsSubnetName": "",
@@ -2223,10 +2208,10 @@
             }
           },
           "OPNScriptURI": {
-            "value": "[parameters('OpnScriptURI')]"
+            "value": "[variables('OpnScriptURI')]"
           },
           "ShellScriptName": {
-            "value": "[parameters('ShellScriptName')]"
+            "value": "[variables('ShellScriptName')]"
           },
           "TempPassword": {
             "value": "[variables('TempPassword')]"
@@ -2342,6 +2327,7 @@
                 },
                 "storageProfile": {
                   "osDisk": {
+                    "name": "[concat(parameters('virtualMachineName'),'-OSDisk')]",
                     "createOption": "FromImage"
                   },
                   "imageReference": {
@@ -3052,6 +3038,7 @@
                 },
                 "storageProfile": {
                   "osDisk": {
+                    "name": "[concat(parameters('virtualMachineName'),'-OSDisk')]",
                     "createOption": "FromImage"
                   },
                   "imageReference": {
