@@ -1,40 +1,41 @@
 # OPNsense NVA on Azure FreeBSD VM
 
 This OPNsense solution is installed in FreeBSD (Azure Image).
-Here is what you will see when you deploy this Template:
-
-There are 3 different deployment scenarios:
-
-- Active-Active:
-    1) VNET with Two Subnets and OPNsense VM with two NICs.
-    2) VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
-    3) External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
-    4) Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
-    5) It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
-    6) Active-Active a Internal and External loadbalancer will be created.
-    7) Two OPNsense firewalls will be created.
-    8) OPNsense will be configured to allow loadbalancer probe connection.
-    9) OPNsense HA settings will be configured to sync rules changed between both Firewalls.
-    10) Option to deploy Windows management VM. (This option requires a management subnet to be created)
-
-- TwoNics:
-    1) VNET with Two Subnets and OPNsense VM with two NICs.
-    2) VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
-    3) External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
-    4) Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
-    5) It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
-    6) Option to deploy Windows management VM. (This option requires a management subnet to be created)
-
-- SingleNic:
-    1) VNET with single Subnet and OPNsense VM with single NIC.
-    2) VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
-    3) External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
-    4) It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS.
-    5) Option to deploy Windows management VM. (This option requires a management subnet to be created)
 
 Design of two Nic deployment | Design of Active-Active deployment |
 |--------|--------|
 |![opnsense design](./images/two-nics.png)|![opnsense design](./images/active-active.png)|
+
+Here is what you will see when you deploy this Template:
+
+There are 3 different deployment scenarios:
+
+1. Active-Active:
+  * VNET with Two Subnets and OPNsense VM with two NICs.
+  * VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
+  * External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
+  * Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
+  * It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
+  * Active-Active a Internal and External loadbalancer will be created.
+  * Two OPNsense firewalls will be created.
+  * OPNsense will be configured to allow loadbalancer probe connection.
+  * OPNsense HA settings will be configured to sync rules changed between both Firewalls.
+  * Option to deploy Windows management VM. (This option requires a management subnet to be created)
+
+2. TwoNics:
+  * VNET with Two Subnets and OPNsense VM with two NICs.
+  * VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
+  * External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
+  * Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
+  * It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
+  * Option to deploy Windows management VM. (This option requires a management subnet to be created)
+
+3. SingleNic:
+  * VNET with single Subnet and OPNsense VM with single NIC.
+  * VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
+  * External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
+  * It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS.
+  * Option to deploy Windows management VM. (This option requires a management subnet to be created)
 
 ## Deployment
 
@@ -71,19 +72,15 @@ Here are few considerations to deploy this solution correctly:
 - To send traffic to OPNsense you need to create UDR 0.0.0.0 and set IP of trusted NIC IP (10.0.1.4) as next hop. Associate that NVA to Trusted-Subnet.
 - **Note:** It is necessary to create appropriate Firewall rules inside OPNsense to desired traffic to work properly.
 
-## Roadmap
+## Release note
 
-Build custom deployment form
-
-## Updates
-
-## October-2022
+### October-2022
 - Updated FreeBSD to 13.1
 - Updated OPNSense to 22.7
 - Updated Azure Linux Agent to 2.8.0
 - Updated Python symbolic link to 3.9
 
-## April-2022
+### April-2022
 - Updated FreeBSD 13 and OPNSense 22.1
 - Added support for Floating IPs in External Load Balance Rules to allow Port Forwarding without causing assymetric issues.
 - Enabled session Sync between Firewalls.
