@@ -10,6 +10,7 @@
 
 # Check if Primary or Secondary Server to setup Firewal Sync
 # Note: Firewall Sync should only be setup in the Primary Server
+echo "==> 1. CONFIGURE OPNSENSE"
 if [ "$2" = "Primary" ]; then
     fetch $1config-active-active-primary.xml
     fetch $1get_nic_gw.py
@@ -36,8 +37,8 @@ elif [ "$2" = "TwoNics" ]; then
     fetch $1config-twonics.xml
     fetch $1get_nic_gw.py
     gwip=$(python get_nic_gw.py $3)
-    sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config.xml
-    sed -i "" "s_zzz.zzz.zzz.zzz_$4_" config.xml
+    sed -i "" "s/yyy.yyy.yyy.yyy/$gwip/" config-twonics.xml
+    sed -i "" "s_zzz.zzz.zzz.zzz_$4_" config-twonics.xml
     cp config-twonics.xml /usr/local/etc/config.xml
 fi
 
@@ -48,6 +49,7 @@ fi
 
 # 1. Package to get root certificate bundle from the Mozilla Project (FreeBSD)
 # 2. Install bash to support Azure Backup integration
+echo "==> 2. GET ROOT CA FROM MOZILLA PROJECT (FREEBSD)"
 env IGNORE_OSVERSION=yes
 pkg bootstrap -f; pkg update -f
 env ASSUME_ALWAYS_YES=YES pkg install ca_root_nss && pkg install -y bash
@@ -56,14 +58,14 @@ env ASSUME_ALWAYS_YES=YES pkg install ca_root_nss && pkg install -y bash
 # fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
 #fetch https://raw.githubusercontent.com/opnsense/update/7ba940e0d57ece480540c4fd79e9d99a87f222c8/src/bootstrap/opnsense-bootstrap.sh.in
 #fetch https://raw.githubusercontent.com/opnsense/update/master/src/bootstrap/opnsense-bootstrap.sh.in
+echo "==> 3. OPNSENSE BOOTSTRAP"
 fetch $1bootstrap/opnsense-bootstrap.sh.in
 sed -i "" 's/#PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-#OPNSense
 sed -i "" "s/reboot/shutdown -r +1/g" opnsense-bootstrap.sh.in
 sh ./opnsense-bootstrap.sh.in -y -r "22.7"
 
 # Add Azure waagent
+echo "==> 4. INSTALL WALINUXAGENT"
 fetch https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.8.0.11.tar.gz
 tar -xvzf v2.8.0.11.tar.gz
 cd WALinuxAgent-2.8.0.11/
@@ -71,6 +73,7 @@ python3 setup.py install --register-service --lnx-distro=freebsd --force
 cd ..
 
 # Fix waagent by replacing configuration settings
+echo "==> 5. FIX WALINUXAGENT (CONFIG SETTINGS)"
 ln -s /usr/local/bin/python3.9 /usr/local/bin/python
 ##sed -i "" 's/command_interpreter="python"/command_interpreter="python3"/' /etc/rc.d/waagent
 ##sed -i "" 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/env python3/' /usr/local/sbin/waagent
@@ -79,9 +82,11 @@ fetch $1actions_waagent.conf
 cp actions_waagent.conf /usr/local/opnsense/service/conf/actions.d
 
 # Installing bash - This is a requirement for Azure custom Script extension to run
+echo "==> 6. INSTALL BASH"
 pkg install -y bash
 
 # Remove wrong route at initialization
+echo "==> 7. REMOVE WRONG ROUTE"
 cat > /usr/local/etc/rc.syshook.d/start/22-remoteroute <<EOL
 #!/bin/sh
 route delete 168.63.129.16
@@ -89,6 +94,7 @@ EOL
 chmod +x /usr/local/etc/rc.syshook.d/start/22-remoteroute
 
 #Adds support to LB probe from IP 168.63.129.16
+echo "==> 7. ADD AZURE INTERNAL VIP ON ARP TABLE (168.63.129.16)"
 # Add Azure VIP on Arp table
 echo # Add Azure Internal VIP >> /etc/rc.conf
 echo static_arp_pairs=\"azvip\" >>  /etc/rc.conf
