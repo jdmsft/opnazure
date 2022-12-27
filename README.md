@@ -10,36 +10,41 @@ Here is what you will see when you deploy this Template:
 
 There are 3 different deployment scenarios:
 
-1. Active-Active:
-  * VNET with Two Subnets and OPNsense VM with two NICs.
-  * VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
-  * External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
-  * Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
-  * It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
-  * Active-Active a Internal and External loadbalancer will be created.
-  * Two OPNsense firewalls will be created.
-  * OPNsense will be configured to allow loadbalancer probe connection.
-  * OPNsense HA settings will be configured to sync rules changed between both Firewalls.
-  * Option to deploy Windows management VM. (This option requires a management subnet to be created)
+**Active-Active**
 
-2. TwoNics:
-  * VNET with Two Subnets and OPNsense VM with two NICs.
-  * VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
-  * External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
-  * Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
-  * It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
-  * Option to deploy Windows management VM. (This option requires a management subnet to be created)
+* VNET with Two Subnets and OPNsense VM with two NICs.
+* VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
+* External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
+* Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
+* It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
+* Active-Active a Internal and External loadbalancer will be created.
+* Two OPNsense firewalls will be created.
+* OPNsense will be configured to allow loadbalancer probe connection.
+* OPNsense HA settings will be configured to sync rules changed between both Firewalls.
+* Option to deploy Windows management VM. (This option requires a management subnet to be created)
 
-3. SingleNic:
-  * VNET with single Subnet and OPNsense VM with single NIC.
-  * VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
-  * External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
-  * It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS.
-  * Option to deploy Windows management VM. (This option requires a management subnet to be created)
+**TwoNics**
+
+* VNET with Two Subnets and OPNsense VM with two NICs.
+* VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
+* External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
+* Internal NIC named Trusted Linked to Trusted-Subnet (10.0.1.0/24).
+* It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS. Same NSG is associated to both Subnets.
+* Option to deploy Windows management VM. (This option requires a management subnet to be created)
+
+SingleNic
+
+* VNET with single Subnet and OPNsense VM with single NIC.
+* VNET Address space is: 10.0.0.0/16 (suggested Address space, you may change that).
+* External NIC named Untrusted Linked to Untrusted-Subnet (10.0.0.0/24).
+* It creates a NSG named OPN-NSG which allows incoming SSH and HTTPS.
+* Option to deploy Windows management VM. (This option requires a management subnet to be created)
 
 ## Deployment
 
 [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjdmsft%2Fopnazure%2Fmaster%2FARM%2Fmain.json%3F/uiFormDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fjdmsft%2Fopnazure%2Fmaster%2FARM%2FuiFormDefinition.json)
+
+*Estimated deployment time: ~8min*
 
 The template allows you to deploy an OPNsense Firewall VM using the opnsense-bootsrtap installation method. It creates an FreeBSD VM, does a silent install of OPNsense using a modified version of opnsense-bootstrap.sh with the settings provided.
 
